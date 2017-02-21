@@ -24,6 +24,7 @@ api.post('/signin', UserController.signin);
 
 api.use(UserController.tokenCheck);
 api.get('/authenticated', UserController.getAuthenticatedUser);
+api.get('/anal', UserController.anal);
 //api.post('/upload', upload, UserController.uploadPicture);
 
 module.exports = api;

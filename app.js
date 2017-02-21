@@ -12,5 +12,5 @@ app.use(morgan('dev'));
 app.use('/pictures', express.static(__dirname + '/uploads'));
 
 
-app.use('/api', api);
+app.use('/', api);
 module.exports = app;

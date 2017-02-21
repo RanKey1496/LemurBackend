@@ -139,6 +139,13 @@ function getAuthenticatedUser(req, res){
 	});
 };
 
+function anal(req, res){
+	return res.json({success: true, 
+		message: req.decoded,
+		anal: 'Tu papa'
+	});
+}
+
 /*function uploadPicture(req, res){
 	if(!req.file){
 		return res.status(404).json({success: false, 
@@ -167,6 +174,7 @@ module.exports = {
 	tokenCheck,
 	signup,
 	signin,
-	getAuthenticatedUser//,
+	getAuthenticatedUser,
+	anal//,
 	//uploadPicture
 }
