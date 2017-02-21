@@ -6,37 +6,24 @@ var crypto = require('crypto');
 var beautifyUnique = require('mongoose-beautiful-unique-validation');
 
 var UserSchema = Schema({
-	email: {
+	username:{
 		type: String, unique: true, lowercase: true, required: true
 	},
 	password: {
 		type: String, select: false, required: true
 	},
 	name: {
-		first: { type: String, required: true, trim: true},
-		last: { type: String, required: true, trim: true}
+		first: { type: String, required: true},
+		last: { type: String, required: true}
 	},
-	addresses: [{
-		street: String,
-		city: String,
-		country: String
-	}],
-	phone: [{
-		type: {type: String},
-		number: String
-	}],
-	picture: String,
-	pets: [{
-		name: String,
-		type: {type: String},
-		gender: String, enum: ['male', 'female'],
-		picture: String
+	company: [{
+		type: Schema.ObjectId, ref: 'Company'
 	}],
 	signupDate: {
 		type: Date, default: Date.now()
 	},
 	role: {
-		type: String, default: 'user'
+		type: String, enum: ['admin', 'user', 'producer'], default: 'user'
 	}
 });
 

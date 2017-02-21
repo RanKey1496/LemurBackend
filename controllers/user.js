@@ -5,21 +5,13 @@ var bcrypt = require('bcrypt-nodejs');
 
 function signup(req, res){
 	var user = new User({
-		email: req.body.email,
+		username: req.body.username,
 		password: req.body.password,
 		name: {
 			first: req.body.first,
 			last: req.body.last
 		},
-		addresses: {
-			street: req.body.street,
-			city: req.body.city,
-			country: req.body.country
-		},
-		phone: {
-			type: req.body.type,
-			number: req.body.number
-		}
+		company: req.body.company
 	});
 
 	user.save(function(err, data){
@@ -36,16 +28,16 @@ function signup(req, res){
 };
 
 function signin(req, res){
-	if(!req.body.email || !req.body.password){
+	if(!req.body.username || !req.body.password){
 		return res.status(400).json({success: false, 
 			message: { 
-				errors: 'Invalid email or password', 
+				errors: 'Invalid username or password', 
 				message: 'User validation failed', 
 				name: 'ValidationError'
 			}
 		});
 	}
-	User.findOne({ email: req.body.email.toLowerCase() }, 'password role name email', function(err, user){
+	User.findOne({ username: req.body.username.toLowerCase() }, 'password role name username', function(err, user){
 		if(err){
 			return res.status(400).json({ success: false, 
 				message: err
@@ -71,14 +63,14 @@ function signin(req, res){
 				if(!resB){
 					return res.status(400).json({ success: false, 
 						message:{ 
-							errors: 'E-mail and password do not match', 
+							errors: 'username and password do not match', 
 							message: 'User validation failed', 
 							name: 'ValidationError'
 						}
 					});
 				} else {
 					var token = jwt.sign({
-						email: user.email,
+						username: user.username,
 						name: user.name,
 						role: user.role
 					}, config.hash_secret, {
@@ -139,13 +131,6 @@ function getAuthenticatedUser(req, res){
 	});
 };
 
-function anal(req, res){
-	return res.json({success: true, 
-		message: req.decoded,
-		anal: 'Tu papa'
-	});
-}
-
 /*function uploadPicture(req, res){
 	if(!req.file){
 		return res.status(404).json({success: false, 
@@ -174,7 +159,6 @@ module.exports = {
 	tokenCheck,
 	signup,
 	signin,
-	getAuthenticatedUser,
-	anal//,
+	getAuthenticatedUser
 	//uploadPicture
 }

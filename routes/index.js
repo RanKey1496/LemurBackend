@@ -1,5 +1,6 @@
 var express = require('express');
 var UserController= require('../controllers/user');
+var CompanyController = require('../controllers/company');
 var api = express.Router();
 var multer = require('multer');
 
@@ -16,15 +17,27 @@ var upload = multer({ storage: storage }).single('avatar');
 */
 
 api.get('/', function(req, res){
-	return res.status(200).send({message: 'Entraste a la API'});
+	return res.status(200).send({message: 'Lemur API'});
 });
 
+//Users
 api.post('/signup', UserController.signup);
 api.post('/signin', UserController.signin);
 
+//Middleware
 api.use(UserController.tokenCheck);
+
+//Companies
 api.get('/authenticated', UserController.getAuthenticatedUser);
-api.get('/anal', UserController.anal);
+api.post('/company/create', CompanyController.create);
+api.post('/company/get', CompanyController.get);
+api.post('/company/update', CompanyController.update);
+api.post('/company/remove', CompanyController.remove);
+
+//Songs
+
+//PlayList
+
 //api.post('/upload', upload, UserController.uploadPicture);
 
 module.exports = api;
