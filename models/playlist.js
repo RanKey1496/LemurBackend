@@ -10,7 +10,7 @@ var PlayListSchema = new Schema({
 		type: String, required: true
 	},
 	songs: [{
-		type: Schema.ObjectId, ref: 'Song'
+		type: Schema.ObjectId, ref: 'Song', unique: true
 	}],
 	createdDate : {
 		type: Date, default: Date.now()

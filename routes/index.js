@@ -2,19 +2,20 @@ var express = require('express');
 var UserController= require('../controllers/user');
 var CompanyController = require('../controllers/company');
 var SongController = require('../controllers/song');
+var PlayListController = require('../controllers/playlist');
 var api = express.Router();
 var multer = require('multer');
 
 //Image upload
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/')
+    cb(null, 'songs/')
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + '.mp3')
   }
 });
-var upload = multer({ storage: storage }).single('avatar');
+var upload = multer({ storage: storage }).single('file');
 
 api.get('/', function(req, res){
 	return res.status(200).send({message: 'Lemur API'});
@@ -26,7 +27,6 @@ api.post('/signin', UserController.signin);
 
 //Middleware
 api.use(UserController.tokenCheck);
-
 api.get('/authenticated', UserController.getAuthenticatedUser);
 
 //Companies
@@ -42,6 +42,13 @@ api.post('/song/update', SongController.update);
 api.post('/song/remove', SongController.remove);
 
 //PlayList
+api.post('/playlist/create', upload, PlayListController.create);
+api.post('/playlist/get', PlayListController.get);
+api.post('/playlist/update', PlayListController.update);
+api.post('/playlist/remove', PlayListController.remove);
+api.post('/playlist/addSong', PlayListController.addSong);
+
+
 api.post('/upload', upload, UserController.uploadPicture);
 api.post('/upload2', upload, UserController.getShit);
 

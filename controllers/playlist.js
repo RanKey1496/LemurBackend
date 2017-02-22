@@ -1,4 +1,5 @@
 var PlayList = require('../models/playlist');
+var Song = require('../models/song');
 
 function create(req, res){
 	var playlist = new PlayList({
@@ -44,7 +45,24 @@ function get(req, res){
 };
 
 function update(req, res){
-	var params = { name: req.body.name, creator: req.body.creator };
+	var params = {};
+	if(req.body.name && req.body.creator) {
+		params = { name: req.body.name, creator: req.body.creator };
+	} else if(req.body.name){
+		params = { name: req.body.name };
+	} else if(req.body.creator){
+		params = { creator: req.body.creator };
+	} else {
+		return res.status(400).json({ success: false,
+			message: { 
+					errors: 'PlayList update failed', 
+					message: 'Not enough params', 
+					name: 'ValidationError'
+			}
+		});
+	}
+
+	
 	PlayList.findOneAndUpdate({ _id: req.body.id }, params, function(err, playlist){
 		if(err){
 			return res.status(400).json({ success: false, 
@@ -56,7 +74,7 @@ function update(req, res){
 			return res.status(400).json({ success: false, 
 				message: { 
 					errors: 'PlayList update failed', 
-					message: 'Playlist not found', 
+					message: 'PlayList not found', 
 					name: 'ValidationError'
 				}
 			});
@@ -93,8 +111,56 @@ function remove(req, res){
 };
 
 function addSong(req, res){
-	var params = {  }
-	PlayList.findOneAndUpdate({ _id: req.body.id }, {$push: {songs: {ObjectId: req.body.song}}}, function(err, playlist){
+	Song.findById(req.body.song, function(err, song){
+		if(err){
+			return res.status(400).json({ success: false, 
+				message: err
+			});
+		}
+
+		if(!song){
+			return res.status(400).json({ success: false, 
+				message: { 
+					errors: 'Song select failed', 
+					message: 'Song not found', 
+					name: 'ValidationError'
+				}
+			});
+		} else if (song){
+			PlayList.findById(req.body.id, function(err, playlist){
+				if(err){
+					return res.status(400).json({ success: false, 
+						message: err
+					});
+				}
+
+				if(!playlist){
+					return res.status(400).json({ success: false, 
+						message: { 
+							errors: 'Playlist delete failed', 
+							message: 'Playlist not found', 
+							name: 'ValidationError'
+						}
+					});
+				} else if (playlist){
+					playlist.songs.push(song);
+					playlist.save(function(err, callback){
+						if(err){
+							return res.status(400).json({ success: false, 
+								message: err
+							});
+						}
+
+						return res.json ({ success: true,
+							message: 'Song added to playlist'
+						});
+					});
+				}
+			})
+		}
+	});
+
+	/*PlayList.findOneAndUpdate({ _id: req.body.id }, {$push: {songs: {ObjectId: req.body.song}}}, function(err, playlist){
 		if(err){
 			return res.status(400).json({ success: false, 
 				message: err
@@ -114,7 +180,7 @@ function addSong(req, res){
 				message: 'Song added to playlist'
 			});
 		}
-	})
+	})*/
 
 	/*Contact.findByIdAndUpdate(
         info._id,
