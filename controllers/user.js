@@ -131,7 +131,7 @@ function getAuthenticatedUser(req, res){
 	});
 };
 
-/*function uploadPicture(req, res){
+function uploadPicture(req, res){
 	if(!req.file){
 		return res.status(404).json({success: false, 
 			message: {
@@ -153,12 +153,19 @@ function getAuthenticatedUser(req, res){
 		return res.json({success: true, 
 			message: 'Picture update'});
 	});
-};*/
+};
+
+function getShit(req, res){
+	return res.json({
+		message: req.file
+	});
+}
 
 module.exports = {
 	tokenCheck,
 	signup,
 	signin,
-	getAuthenticatedUser
-	//uploadPicture
+	getAuthenticatedUser,
+	uploadPicture,
+	getShit
 }
