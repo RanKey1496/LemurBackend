@@ -1,6 +1,7 @@
 var express = require('express');
 var UserController= require('../controllers/user');
 var CompanyController = require('../controllers/company');
+var SongController = require('../controllers/song');
 var api = express.Router();
 var multer = require('multer');
 
@@ -35,9 +36,12 @@ api.post('/company/update', CompanyController.update);
 api.post('/company/remove', CompanyController.remove);
 
 //Songs
+api.post('/song/create', SongController.create);
+api.post('/song/get', SongController.get);
+api.post('/song/update', SongController.update);
+api.post('/song/remove', SongController.remove);
 
 //PlayList
-
 api.post('/upload', upload, UserController.uploadPicture);
 api.post('/upload2', upload, UserController.getShit);
 
