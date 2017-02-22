@@ -1,12 +1,15 @@
-var Company = require('../models/company');
+var Song = require('../models/song');
 
 function create(req, res){
-	var company = new Company({
-		nit: req.body.nit,
-		name: req.body.name
+	var song = new Song({
+		name: req.body.name,
+		artist: req.body.artist,
+		album: req.body.album,
+		duration: req.body.duration,
+		url: 'http://localhost:3000' + req.file.path
 	});
 
-	company.save(function(err, company){
+	song.save(function(err, company){
 		if(err){
 			return res.status(400).json({success: false, 
 				message: err
@@ -19,25 +22,49 @@ function create(req, res){
 	});
 };
 
-function get(req, res){
-	Company.findOne({ nit: req.body.nit }, 'nit name -_id', function(err, company){
+function getAll(req, res){
+	Song.find({}, 'url name artist _id duration', function(err, song){
 		if(err){
 			return res.status(400).json({ success: false, 
 				message: err
 			});
 		}
 
-		if(!company){
+		if(!song){
 			return res.status(400).json({ success: false, 
 				message: { 
-					errors: 'Company validation failed', 
-					message: 'Company not found', 
+					errors: 'Song validation failed', 
+					message: 'Song not found', 
 					name: 'ValidationError'
 				}
 			});
-		} else if (company){
+		} else if (song){
 			res.json ({ success: true,
-				message: company
+				message: song
+			});
+		}
+	});
+}
+
+function get(req, res){
+	Song.findOne({ _id: req.body.id }, 'url name artist _id duration', function(err, song){
+		if(err){
+			return res.status(400).json({ success: false, 
+				message: err
+			});
+		}
+
+		if(!song){
+			return res.status(400).json({ success: false, 
+				message: { 
+					errors: 'Song validation failed', 
+					message: 'Song not found', 
+					name: 'ValidationError'
+				}
+			});
+		} else if (song){
+			res.json ({ success: true,
+				message: song
 			});
 		}
 	});
@@ -45,22 +72,22 @@ function get(req, res){
 
 function update(req, res){
 	var params = { name: req.body.name };
-	Company.findOneAndUpdate({ nit: req.body.nit }, params, function(err, company){
+	Song.findOneAndUpdate({ _id: req.body.id }, params, function(err, song){
 		if(err){
 			return res.status(400).json({ success: false, 
 				message: err
 			});
 		}
 
-		if(!company){
+		if(!song){
 			return res.status(400).json({ success: false, 
 				message: { 
-					errors: 'Company update failed', 
-					message: 'Company not found', 
+					errors: 'Song update failed', 
+					message: 'Song not found', 
 					name: 'ValidationError'
 				}
 			});
-		} else if (company){
+		} else if (song){
 			res.json ({ success: true,
 				message: 'Updated successfully'
 			});

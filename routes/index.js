@@ -36,7 +36,7 @@ api.post('/company/update', CompanyController.update);
 api.post('/company/remove', CompanyController.remove);
 
 //Songs
-api.post('/song/create', SongController.create);
+api.post('/song/create', upload, SongController.create);
 api.post('/song/get', SongController.get);
 api.post('/song/update', SongController.update);
 api.post('/song/remove', SongController.remove);
