@@ -143,6 +143,16 @@ function addSong(req, res){
 						}
 					});
 				} else if (playlist){
+					if(containsObject(song.id, playlist.songs)){
+							return res.status(400).json({ success: false, 
+								message: { 
+								errors: 'Song add failed', 
+								message: 'Song already exist on PlayList', 
+								name: 'ValidationError'
+							}
+						});
+					}
+
 					playlist.songs.push(song);
 					playlist.save(function(err, callback){
 						if(err){
@@ -159,43 +169,111 @@ function addSong(req, res){
 			})
 		}
 	});
+};
 
-	/*PlayList.findOneAndUpdate({ _id: req.body.id }, {$push: {songs: {ObjectId: req.body.song}}}, function(err, playlist){
+function removeSong(req, res){
+	Song.findById(req.body.song, function(err, song){
 		if(err){
 			return res.status(400).json({ success: false, 
 				message: err
 			});
 		}
 
-		if(!playlist){
+		if(!song){
 			return res.status(400).json({ success: false, 
 				message: { 
-					errors: 'Playlist delete failed', 
+					errors: 'Song select failed', 
+					message: 'Song not found', 
+					name: 'ValidationError'
+				}
+			});
+		} else if (song){
+			PlayList.findById(req.body.id, function(err, playlist){
+				if(err){
+					return res.status(400).json({ success: false, 
+						message: err
+					});
+				}
+
+				if(!playlist){
+					return res.status(400).json({ success: false, 
+						message: { 
+							errors: 'Playlist delete failed', 
+							message: 'Playlist not found', 
+							name: 'ValidationError'
+						}
+					});
+				} else if (playlist){
+					if(!containsObject(song.id, playlist.songs)){
+							return res.status(400).json({ success: false, 
+								message: { 
+								errors: 'Song remove failed', 
+								message: 'Song doesnt exist on PlayList', 
+								name: 'ValidationError'
+							}
+						});
+					}
+
+					playlist.songs.remove(song);
+					playlist.save(function(err, callback){
+						if(err){
+							return res.status(400).json({ success: false, 
+								message: err
+							});
+						}
+
+						return res.json ({ success: true,
+							message: 'Song remove from playlist successfully'
+						});
+					});
+				}
+			})
+		}
+	});
+}
+
+function search(req, res){
+	var nam2 = req.body.name;
+	PlayList.find({name: /'Playlist 2'/i}, function(err, playlists){
+		if(err){
+			return res.status(400).json({ success: false, 
+				message: err
+			});
+		}
+
+		if(!playlists){
+			return res.status(400).json({ success: false, 
+				message: { 
+					errors: 'Playlist validation failed', 
 					message: 'Playlist not found', 
 					name: 'ValidationError'
 				}
 			});
-		} else if (playlist){
+		} else if (playlists){
 			res.json ({ success: true,
-				message: 'Song added to playlist'
+				message: playlists
 			});
 		}
-	})*/
+	});
+}
 
-	/*Contact.findByIdAndUpdate(
-        info._id,
-        {$push: {"messages": {title: title, msg: msg}}},
-        {safe: true, upsert: true, new : true},
-        function(err, model) {
-            console.log(err);
+function containsObject(obj, list) {
+    var i;
+    for (i = 0; i < list.length; i++) {
+        if (list[i] == obj) {
+            return true;
         }
-    );*/
-};
+    }
+
+    return false;
+}
 
 module.exports = {
 	create,
 	get,
 	update,
 	remove,
-	addSong
+	addSong,
+	removeSong,
+	search
 }

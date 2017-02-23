@@ -47,6 +47,8 @@ api.post('/playlist/get', PlayListController.get);
 api.post('/playlist/update', PlayListController.update);
 api.post('/playlist/remove', PlayListController.remove);
 api.post('/playlist/addSong', PlayListController.addSong);
+api.post('/playlist/removeSong', PlayListController.removeSong);
+api.post('/playlist/search', PlayListController.search);
 
 
 api.post('/upload', upload, UserController.uploadPicture);
