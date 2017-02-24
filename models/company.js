@@ -8,6 +8,12 @@ var CompanySchema = Schema({
 	}, 
 	name: {
 		type: String, required: true
+	},
+	playlists: [{
+		type: Schema.ObjectId, ref: 'PlayList'
+	}],
+	createdDate : {
+		type: Date, default: Date.now()
 	}
 });
 

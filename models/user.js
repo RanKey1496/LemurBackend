@@ -16,7 +16,7 @@ var UserSchema = Schema({
 		first: { type: String, required: true},
 		last: { type: String, required: true}
 	},
-	company: [{
+	companies: [{
 		type: Schema.ObjectId, ref: 'Company'
 	}],
 	signupDate: {

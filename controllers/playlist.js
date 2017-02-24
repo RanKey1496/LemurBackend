@@ -137,7 +137,7 @@ function addSong(req, res){
 				if(!playlist){
 					return res.status(400).json({ success: false, 
 						message: { 
-							errors: 'Playlist delete failed', 
+							errors: 'Playlist add failed', 
 							message: 'Playlist not found', 
 							name: 'ValidationError'
 						}
@@ -233,13 +233,13 @@ function removeSong(req, res){
 }
 
 function search(req, res){
-	var nam2 = req.body.name;
-	PlayList.find({name: /'Playlist 2'/i}, function(err, playlists){
+	var regex = new RegExp(req.body.name, 'i');
+	PlayList.find({name: regex}, {'name':1}, function(err, playlists){
 		if(err){
 			return res.status(400).json({ success: false, 
 				message: err
 			});
-		}
+		} 
 
 		if(!playlists){
 			return res.status(400).json({ success: false, 
@@ -254,7 +254,7 @@ function search(req, res){
 				message: playlists
 			});
 		}
-	});
+	})
 }
 
 function containsObject(obj, list) {

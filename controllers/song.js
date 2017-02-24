@@ -22,30 +22,6 @@ function create(req, res){
 	});
 };
 
-function getAll(req, res){
-	Song.find({}, 'url name artist _id duration', function(err, song){
-		if(err){
-			return res.status(400).json({ success: false, 
-				message: err
-			});
-		}
-
-		if(!song){
-			return res.status(400).json({ success: false, 
-				message: { 
-					errors: 'Song validation failed', 
-					message: 'Song not found', 
-					name: 'ValidationError'
-				}
-			});
-		} else if (song){
-			res.json ({ success: true,
-				message: song
-			});
-		}
-	});
-}
-
 function get(req, res){
 	Song.findOne({ _id: req.body.id }, 'url name artist _id duration', function(err, song){
 		if(err){
@@ -69,6 +45,30 @@ function get(req, res){
 		}
 	});
 };
+
+function getAll(req, res){
+	Song.find({}, 'id url name artist duration', function(err, songs){
+		if(err){
+			return res.status(400).json({ success: false, 
+				message: err
+			});
+		}
+
+		if(!songs){
+			return res.status(400).json({ success: false, 
+				message: { 
+					errors: 'Song validation failed', 
+					message: 'Song not found', 
+					name: 'ValidationError'
+				}
+			});
+		} else if (songs){
+			res.json ({ success: true,
+				message: songs
+			});
+		}
+	});
+}
 
 function update(req, res){
 	var params = { name: req.body.name };
@@ -119,9 +119,36 @@ function remove(req, res){
 	});
 };
 
+function search(req, res){
+	var regex = new RegExp(req.body.name, 'i');
+	Song.find({name: regex}, {'name':1}, function(err, songs){
+		if(err){
+			return res.status(400).json({ success: false, 
+				message: err
+			});
+		} 
+
+		if(!songs){
+			return res.status(400).json({ success: false, 
+				message: { 
+					errors: 'Song validation failed', 
+					message: 'Song not found', 
+					name: 'ValidationError'
+				}
+			});
+		} else if (songs){
+			res.json ({ success: true,
+				message: songs
+			});
+		}
+	})
+}
+
 module.exports = {
 	create,
 	get,
+	getAll,
 	update,
-	remove
+	remove,
+	search
 }

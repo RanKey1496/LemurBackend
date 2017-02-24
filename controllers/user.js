@@ -3,6 +3,8 @@ var User = require('../models/user');
 var config = require('../config');
 var bcrypt = require('bcrypt-nodejs');
 
+var Company = require('../models/company');
+
 function signup(req, res){
 	var user = new User({
 		username: req.body.username,
@@ -86,6 +88,128 @@ function signin(req, res){
 	});
 };
 
+function addCompany(req, res){
+	Company.findById(req.body.company, function(err, company){
+		if(err){
+			return res.status(400).json({ success: false, 
+				message: err
+			});
+		}
+
+		if(!company){
+			return res.status(400).json({ success: false, 
+				message: { 
+					errors: 'Company select failed', 
+					message: 'Company not found', 
+					name: 'ValidationError'
+				}
+			});
+		} else if (company){
+			User.findById(req.body.id, function(err, user){
+				if(err){
+					return res.status(400).json({ success: false, 
+						message: err
+					});
+				}
+
+				if(!user){
+					return res.status(400).json({ success: false, 
+						message: { 
+							errors: 'Company delete failed', 
+							message: 'User not found', 
+							name: 'ValidationError'
+						}
+					});
+				} else if (user){
+					if(containsObject(company.id, user.companies)){
+							return res.status(400).json({ success: false, 
+								message: { 
+								errors: 'Company add failed', 
+								message: 'Company already exist on User', 
+								name: 'ValidationError'
+							}
+						});
+					}
+
+					user.companies.push(company);
+					user.save(function(err, callback){
+						if(err){
+							return res.status(400).json({ success: false, 
+								message: err
+							});
+						}
+
+						return res.json ({ success: true,
+							message: 'Company added to User'
+						});
+					});
+				}
+			})
+		}
+	});
+};
+
+function removeCompany(req, res){
+	Company.findById(req.body.company, function(err, company){
+		if(err){
+			return res.status(400).json({ success: false, 
+				message: err
+			});
+		}
+
+		if(!company){
+			return res.status(400).json({ success: false, 
+				message: { 
+					errors: 'Company select failed', 
+					message: 'Company not found', 
+					name: 'ValidationError'
+				}
+			});
+		} else if (company){
+			User.findById(req.body.id, function(err, user){
+				if(err){
+					return res.status(400).json({ success: false, 
+						message: err
+					});
+				}
+
+				if(!user){
+					return res.status(400).json({ success: false, 
+						message: { 
+							errors: 'User delete failed', 
+							message: 'User not found', 
+							name: 'ValidationError'
+						}
+					});
+				} else if (user){
+					if(!containsObject(company.id, user.companies)){
+							return res.status(400).json({ success: false, 
+								message: { 
+								errors: 'Comapny remove failed', 
+								message: 'Company doesnt exist on the User', 
+								name: 'ValidationError'
+							}
+						});
+					}
+
+					user.companies.remove(company);
+					user.save(function(err, callback){
+						if(err){
+							return res.status(400).json({ success: false, 
+								message: err
+							});
+						}
+
+						return res.json ({ success: true,
+							message: 'Company remove from user successfully'
+						});
+					});
+				}
+			})
+		}
+	});
+}
+
 function tokenCheck(req, res, next){
 	if(req.headers && req.headers.authorization){
 		var parts = req.headers.authorization.split(' ');
@@ -131,34 +255,15 @@ function getAuthenticatedUser(req, res){
 	});
 };
 
-function uploadPicture(req, res){
-	if(!req.file){
-		return res.status(404).json({success: false, 
-			message: {
-				errors: 'No files were uploaded',
-				message: 'No images were uploaded',
-				name: 'ValidationError'
-			}
-		});
-	}
+function containsObject(obj, list) {
+    var i;
+    for (i = 0; i < list.length; i++) {
+        if (list[i] == obj) {
+            return true;
+        }
+    }
 
-	var file = 'http://localhost:3000/pictures/'.concat(req.file.filename);
-	User.findOneAndUpdate({ email: req.decoded.email }, {picture: file}, function(err, data){
-		if(err){
-			return res.status(500).json({success: false, 
-				message: err
-			});
-		}
-
-		return res.json({success: true, 
-			message: 'Picture update'});
-	});
-};
-
-function getShit(req, res){
-	return res.json({
-		message: req.file
-	});
+    return false;
 }
 
 module.exports = {
@@ -166,6 +271,6 @@ module.exports = {
 	signup,
 	signin,
 	getAuthenticatedUser,
-	uploadPicture,
-	getShit
+	addCompany,
+	removeCompany
 }
