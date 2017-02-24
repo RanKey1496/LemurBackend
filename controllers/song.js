@@ -6,7 +6,7 @@ function create(req, res){
 		artist: req.body.artist,
 		album: req.body.album,
 		duration: req.body.duration,
-		url: 'http://localhost:3000' + req.file.path
+		url: 'http://localhost:3000/' + req.file.path
 	});
 
 	song.save(function(err, company){

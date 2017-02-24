@@ -6,7 +6,8 @@ var cors = require('cors');
 
 var app = express();
 app.use(cors());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({limit: '10mb', extended: false}));
+//app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(bodyParser.json());
 app.use(morgan('dev'));
 app.use('/public/songs', express.static(__dirname + '/public/songs'));
